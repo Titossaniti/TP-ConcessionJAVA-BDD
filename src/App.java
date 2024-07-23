@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Scanner;
 
 import Metier.Concession;
 import Metier.Voiture;
@@ -8,8 +10,17 @@ import Metier.Voiture;
 public class App {
 
     private Concession concession;
-
+    private DatabaseManager dbManager;
     public App() {
+
+        try {
+            this.dbManager = new DatabaseManager("jdbc:mysql://localhost:3306/concession?characterEncoding=utf8", "root", "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erreur");
+            System.exit(0);
+        }
+
         creerConcession();
         Menu();
     }
@@ -55,7 +66,7 @@ public class App {
                 break;
             case 3:
                 System.out.println("Supprimer une voiture à la concession (entrer index)");
-                SupprimerVoitureConcession();
+                supprimerVoitureConcession();
                 break;
             case 4:
                 System.out.println("Sortir de la boucle");
@@ -90,7 +101,19 @@ public class App {
     }
 
     public Voiture creerVoiture() {
-        Voiture voiture = new Voiture(demanderInfo(),demanderInfo());
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Entrez la marque de la voiture: ");
+        String marque = scanner.nextLine();
+        System.out.print("Entrez le modèle de la voiture: ");
+        String modele = scanner.nextLine();
+        Voiture voiture = new Voiture(marque, modele);
+        try {
+            dbManager.addVehicule(voiture);
+            System.out.println("Voiture ajoutée avec succès !");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de l'ajout de la voiture.");
+        }
         return voiture;
     }
 
@@ -101,14 +124,22 @@ public class App {
     }
 
     public void afficherListeVoiture() {
-        for(int i=0; i<this.getConcession().getVoitures().size(); i++) {
-            System.out.println(i + " " + this.concession.getVoitures().get(i));
+        List<Voiture> voitures = dbManager.getVehicule();
+        for (Voiture voiture : voitures) {
+            System.out.println(voiture);
         }
     }
 
-    public void SupprimerVoitureConcession() {
-        this.afficherListeVoiture();
-        int choix = choix();
-        this.concession.getVoitures().remove(choix);
+    public void supprimerVoitureConcession(String marque) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Entrez la marque de la voiture à supprimer: ");
+        scanner.nextLine();
+        try {
+            dbManager.deleteVehicule(marque);
+            System.out.println("Voiture supprimée avec succès !");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la suppression de la voiture.");
+        }
     }
 }
