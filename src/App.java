@@ -11,16 +11,9 @@ public class App {
 
     private Concession concession;
     private DatabaseManager dbManager;
+
     public App() {
-
-        try {
-            this.dbManager = new DatabaseManager("jdbc:mysql://localhost:3306/concession?characterEncoding=utf8", "root", "");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erreur");
-            System.exit(0);
-        }
-
+        this.dbManager = new DatabaseManager();
         creerConcession();
         Menu();
     }
@@ -37,8 +30,7 @@ public class App {
         boolean continuer = true;
         do {
             continuer = action(continuer);
-        }
-        while(continuer);
+        } while (continuer);
     }
 
     public int choix() {
@@ -53,11 +45,10 @@ public class App {
     }
 
     public boolean action(boolean sortir) {
-
         Scanner scanner = new Scanner(System.in);
         Menu();
         int choix = choix();
-        switch(choix) {
+        switch (choix) {
             case 1:
                 afficherListeVoiture();
                 break;
@@ -107,7 +98,6 @@ public class App {
         try {
             info = bufferRead.readLine();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return info;
@@ -152,6 +142,7 @@ public class App {
             System.out.println("Erreur lors de la suppression de la voiture.");
         }
     }
+
     public void modifierVoiture(String oldMarque, String newMarque, String newModel) {
         try {
             dbManager.updateVehicule(oldMarque, newMarque, newModel);
