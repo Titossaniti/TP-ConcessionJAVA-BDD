@@ -117,7 +117,7 @@ public class DatabaseManager {
                 System.out.println("Connecté");
                 PreparedStatement pstmt = conn.prepareStatement(deleteQuery);
                 pstmt.setString(1, marque);
-                pstmt.executeUpdate();
+                pstmt.execute();
                 pstmt.close();
             }
             catch (Exception e) {
@@ -126,4 +126,25 @@ public class DatabaseManager {
                 System.exit(0);
             }
         }
+
+        public void updateVehicule(String oldMarque, String newMarque, String newModel) {
+            String updateQuery = "UPDATE voiture SET marque = ?, model = ? WHERE marque = ?";
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection conn = DriverManager.getConnection(url, user, passwd);
+                System.out.println("Connecté");
+                PreparedStatement pstmt = conn.prepareStatement(updateQuery);
+                pstmt.setString(1, newMarque);
+                pstmt.setString(2, newModel);
+                pstmt.setString(3, oldMarque);
+                pstmt.execute();
+                pstmt.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Erreur");
+                System.exit(0);
+            }
+        }
+
 }

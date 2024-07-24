@@ -53,6 +53,8 @@ public class App {
     }
 
     public boolean action(boolean sortir) {
+
+        Scanner scanner = new Scanner(System.in);
         Menu();
         int choix = choix();
         switch(choix) {
@@ -65,10 +67,20 @@ public class App {
                 this.getConcession().AjoutVoiture(voiture);
                 break;
             case 3:
-                System.out.println("Supprimer une voiture à la concession (entrer index)");
-                supprimerVoitureConcession();
+                System.out.print("Entrez la marque de la voiture à supprimer: ");
+                String delMarque = scanner.nextLine();
+                supprimerVoitureConcession(delMarque);
                 break;
             case 4:
+                System.out.print("Entrez la marque de la voiture à modifier: ");
+                String oldMarque = scanner.nextLine();
+                System.out.print("Entrez le nouveau nom de marque: ");
+                String newMarque = scanner.nextLine();
+                System.out.print("Entrez le nouveau model de la voiture: ");
+                String newModel = scanner.nextLine();
+                modifierVoiture(oldMarque, newMarque, newModel);
+                break;
+            case 5:
                 System.out.println("Sortir de la boucle");
                 sortir = SortirProgram(sortir);
                 break;
@@ -85,7 +97,8 @@ public class App {
         System.out.println("1 - Afficher les voitures de la concession");
         System.out.println("2 - Ajouter une voiture à la concession");
         System.out.println("3 - Supprimer une voiture de la concession");
-        System.out.println("4 - Sortir de l'application");
+        System.out.println("4 - Modifier une voiture de la concession");
+        System.out.println("5 - Sortir de l'application");
     }
 
     public String demanderInfo() {
@@ -98,6 +111,19 @@ public class App {
             e.printStackTrace();
         }
         return info;
+    }
+
+    public void creerConcession() {
+        System.out.println("Quel est le nom de la concession ?");
+        String info = this.demanderInfo();
+        this.setConcession(new Concession(info));
+    }
+
+    public void afficherListeVoiture() {
+        List<Voiture> voitures = dbManager.getVehicule();
+        for (Voiture voiture : voitures) {
+            System.out.println(voiture);
+        }
     }
 
     public Voiture creerVoiture() {
@@ -117,29 +143,22 @@ public class App {
         return voiture;
     }
 
-    public void creerConcession() {
-        System.out.println("Quel est le nom de la concession ?");
-        String info = this.demanderInfo();
-        this.setConcession(new Concession(info));
-    }
-
-    public void afficherListeVoiture() {
-        List<Voiture> voitures = dbManager.getVehicule();
-        for (Voiture voiture : voitures) {
-            System.out.println(voiture);
-        }
-    }
-
     public void supprimerVoitureConcession(String marque) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Entrez la marque de la voiture à supprimer: ");
-        scanner.nextLine();
         try {
             dbManager.deleteVehicule(marque);
             System.out.println("Voiture supprimée avec succès !");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erreur lors de la suppression de la voiture.");
+        }
+    }
+    public void modifierVoiture(String oldMarque, String newMarque, String newModel) {
+        try {
+            dbManager.updateVehicule(oldMarque, newMarque, newModel);
+            System.out.println("Voiture modifiée avec succès !");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la modification de la voiture.");
         }
     }
 }
